@@ -24,49 +24,11 @@ WriteOnlyCharacteristic.prototype.onWriteRequest = function(data, offset, withou
   callback(this.RESULT_SUCCESS);
 };
 
-var NotifyOnlyCharacteristic = function() {
-  NotifyOnlyCharacteristic.super_.call(this, {
-    uuid: 'fffffffffffffffffffffffffffffff5',
-    properties: ['notify']
-  });
-};
-
-util.inherits(NotifyOnlyCharacteristic, BlenoCharacteristic);
-
-NotifyOnlyCharacteristic.prototype.onSubscribe = function(maxValueSize, updateValueCallback) {
-  console.log('NotifyOnlyCharacteristic subscribe');
-
-  this.counter = 0;
-  this.changeInterval = setInterval(function() {
-    var data = new Buffer(4);
-    data.writeUInt32LE(this.counter, 0);
-
-    console.log('NotifyOnlyCharacteristic update value: ' + this.counter);
-    updateValueCallback(data);
-    this.counter++;
-  }.bind(this), 5000);
-};
-
-NotifyOnlyCharacteristic.prototype.onUnsubscribe = function() {
-  console.log('NotifyOnlyCharacteristic unsubscribe');
-
-  if (this.changeInterval) {
-    clearInterval(this.changeInterval);
-    this.changeInterval = null;
-  }
-};
-
-NotifyOnlyCharacteristic.prototype.onNotify = function() {
-  console.log('NotifyOnlyCharacteristic on notify');
-};
-
-
 function SampleService() {
   SampleService.super_.call(this, {
     uuid: 'fffffffffffffffffffffffffffffff0',
     characteristics: [
-      new WriteOnlyCharacteristic(),
-      new NotifyOnlyCharacteristic()
+      new WriteOnlyCharacteristic()
     ]
   });
 }
