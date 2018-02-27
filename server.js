@@ -1,7 +1,6 @@
 var util = require('util');
-
 var bleno = require('bleno');
-
+var fs = require('fs');
 
 var BlenoPrimaryService = bleno.PrimaryService;
 var BlenoCharacteristic = bleno.Characteristic;
@@ -19,10 +18,22 @@ var WriteOnlyCharacteristic = function() {
 util.inherits(WriteOnlyCharacteristic, BlenoCharacteristic);
 
 WriteOnlyCharacteristic.prototype.onWriteRequest = function(data, offset, withoutResponse, callback) {
-  console.log('WriteOnlyCharacteristic write request: ' + data.toString('hex') + ' ' + offset + ' ' + withoutResponse);
+  console.log('WriteOnlyCharacteristic write request: ' + data.toString() + ' ' + offset + ' ' + withoutResponse);
+	writeInputToFile(data);
 
   callback(this.RESULT_SUCCESS);
 };
+
+function writeInputToFile(data){
+	fs.writeFile("SMWSConfig.json",data.toString(),function (error) {
+		if(error) {
+		//Error handling I will do later
+		}
+		else {
+			console.log("Info Dumped");
+		}
+	});
+}
 
 function SampleService() {
   SampleService.super_.call(this, {
@@ -33,6 +44,9 @@ function SampleService() {
   });
 }
 
+
+
+//ToDo Reference sample from here down later
 util.inherits(SampleService, BlenoPrimaryService);
 
 bleno.on('stateChange', function(state) {
