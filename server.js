@@ -5,7 +5,7 @@ var fs = require('fs');
 var BlenoPrimaryService = bleno.PrimaryService;
 var BlenoCharacteristic = bleno.Characteristic;
 var BlenoDescriptor = bleno.Descriptor;
-
+var chunkedJSON = "";
 console.log('bleno');
 
 var WriteOnlyCharacteristic = function() {
@@ -19,7 +19,7 @@ util.inherits(WriteOnlyCharacteristic, BlenoCharacteristic);
 
 WriteOnlyCharacteristic.prototype.onWriteRequest = function(data, offset, withoutResponse, callback) {
   console.log('WriteOnlyCharacteristic write request: ' + data.toString() + ' ' + offset + ' ' + withoutResponse);
-	writeInputToFile(data);
+	chunkedJSON = chunkedJSON + data.toString();
 
   callback(this.RESULT_SUCCESS);
 };
@@ -68,6 +68,7 @@ bleno.on('accept', function(clientAddress) {
 
 bleno.on('disconnect', function(clientAddress) {
   console.log('on -> disconnect, client: ' + clientAddress);
+	writeInputToFile(chunkedJSON);
 });
 
 bleno.on('rssiUpdate', function(rssi) {
